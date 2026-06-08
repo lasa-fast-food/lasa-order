@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LASA Fast Food — Order Now</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:      #0D4A2F;
+    --green-mid:  #166534;
+    --green-lite: #dcfce7;
+    --orange:     #EA580C;
+    --gold:       #F5A623;
+    --cream:      #FFFBF2;
+    --dark:       #111827;
+    --grey:       #6B7280;
+    --white:      #ffffff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--green);
+    padding: 28px 20px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(245,166,35,0.12);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -30px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .flame { font-size: 36px; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+
+  .brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 3px;
+    color: var(--white);
+    line-height: 1;
+    margin: 4px 0 2px;
+  }
+  .brand span { color: var(--gold); }
+  .tagline {
+    font-size: 12px;
+    color: #86EFAC;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  /* ── SCARCITY BANNER ── */
+  .scarcity {
+    background: var(--orange);
+    padding: 10px 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    animation: slideIn 0.6s ease 0.3s both;
+  }
+  @keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
+  .scarcity-text {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: 0.3px;
+  }
+  .scarcity-text strong { color: #FFE08A; }
+  .dot { width: 8px; height: 8px; background: #FFE08A; border-radius: 50%;
+         animation: blink 1s ease-in-out infinite; flex-shrink: 0; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── MENU ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--green);
+    padding: 18px 20px 10px;
+  }
+
+  .menu { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+
+  .item {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--green);
+    border-radius: 4px 0 0 4px;
+    transition: width 0.2s;
+  }
+  .item.selected {
+    border-color: var(--green);
+    background: var(--green-lite);
+  }
+  .item.selected::before { width: 6px; background: var(--gold); }
+  .item:active { transform: scale(0.98); }
+
+  .item-emoji { font-size: 28px; flex-shrink: 0; }
+  .item-info { flex: 1; min-width: 0; }
+  .item-name { font-size: 15px; font-weight: 800; color: var(--dark); }
+  .item-desc { font-size: 12px; color: var(--grey); margin-top: 2px; line-height: 1.4; }
+
+  .item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+  .item-price { font-size: 16px; font-weight: 900; color: var(--green); white-space: nowrap; }
+
+  .qty-ctrl {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--green-lite);
+    border-radius: 20px;
+    padding: 3px 8px;
+  }
+  .qty-btn {
+    width: 22px; height: 22px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .qty-btn:active { background: var(--orange); }
+  .qty-num { font-size: 14px; font-weight: 800; color: var(--green); min-width: 16px; text-align: center; }
+
+  .badge-new {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: var(--orange);
+    color: white;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+
+  /* ── EXTRAS ── */
+  .extras { padding: 0 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .extra-chip {
+    background: white;
+    border: 2px solid var(--green-lite);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--dark);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .extra-chip.selected { background: var(--green); color: white; border-color: var(--green); }
+  .extra-chip:active { transform: scale(0.96); }
+
+  /* ── NOTE ── */
+  .note-wrap { padding: 0 16px; }
+  .note-input {
+    width: 100%;
+    background: white;
+    border: 2px solid var(--green-lite);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    color: var(--dark);
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .note-input:focus { border-color: var(--green); }
+  .note-input::placeholder { color: #9CA3AF; }
+
+  /* ── SUMMARY ── */
+  .summary-bar {
+    margin: 0 16px;
+    background: var(--green);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .summary-label { font-size: 12px; color: #86EFAC; font-weight: 700; }
+  .summary-total { font-size: 22px; font-weight: 900; color: var(--gold); }
+
+  /* ── CTA ── */
+  .cta-wrap { padding: 0 16px 8px; }
+  .cta-btn {
+    width: 100%;
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 18px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 6px 20px rgba(37,211,102,0.4);
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+  }
+  .cta-btn:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(37,211,102,0.3); }
+  .cta-btn:hover { background: #1ebe5a; }
+  .cta-btn svg { flex-shrink: 0; }
+  .cta-disabled {
+    background: #D1FAE5;
+    color: #6B7280;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .cta-disabled:active { transform: none; }
+
+  .cta-note {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--grey);
+    margin-top: 8px;
+    font-weight: 600;
+  }
+
+  /* ── GUARANTEE ── */
+  .guarantee {
+    margin: 0 16px;
+    background: var(--green-lite);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .guarantee-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .guarantee-text { font-size: 12px; color: var(--green-mid); font-weight: 700; line-height: 1.5; }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--green);
+    margin-top: 8px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+  .footer-contact { font-size: 15px; font-weight: 800; color: var(--gold); }
+  .footer-address { font-size: 11px; color: #86EFAC; margin-top: 4px; }
+
+  .spacer { height: 12px; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--dark);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="flame">🔥</div>
+  <div class="brand">LASA <span>FAST FOOD</span></div>
+  <div class="tagline">Postmasburg · Postdene · Hot &amp; Fresh</div>
+</div>
+
+<!-- SCARCITY -->
+<div class="scarcity">
+  <div class="dot"></div>
+  <div class="scarcity-text">⚠️ Only <strong>20 plates</strong> this weekend — order by Friday to secure yours</div>
+  <div class="dot"></div>
+</div>
+
+<!-- MENU -->
+<div class="section-label">Choose Your Order</div>
+
+<div class="menu" id="menuItems">
+
+  <div class="item" data-id="inhloko-pap" data-name="Inhloko + Pap" data-price="70" style="flex-direction:column;align-items:stretch;">
+    <img src="https://raw.githubusercontent.com/mkhanyile08-bot/lasa-order/main/nhloko.jpeg" alt="Inhloko + Pap" style="width:100%;border-radius:10px;margin-bottom:10px;object-fit:contain;height:260px;background:#f9f4ee;display:block;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="item-emoji">🍲</div>
+      <div class="item-info">
+        <div class="item-name">Inhloko + Pap</div>
+        <div class="item-desc">Traditional inhloko served with pap</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">R70</div>
+        <div class="qty-ctrl">
+          <button class="qty-btn minus" onclick="changeQty(this,-1)">−</button>
+          <span class="qty-num">0</span>
+          <button class="qty-btn plus" onclick="changeQty(this,1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-id="half-chicken-braai" data-name="Half Chicken Braai + Pap" data-price="70">
+    <div class="item-emoji">🍗</div>
+    <div class="item-info">
+      <div class="item-name">Half Chicken Braai + Pap</div>
+      <div class="item-desc">Flame-grilled half chicken served with pap</div>
+    </div>
+    <div class="item-right">
+      <div class="item-price">R70</div>
+      <div class="qty-ctrl">
+        <button class="qty-btn minus" onclick="changeQty(this,-1)">−</button>
+        <span class="qty-num">0</span>
+        <button class="qty-btn plus" onclick="changeQty(this,1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-id="chips-small" data-name="Small Chips" data-price="25" style="flex-direction:column;align-items:stretch;">
+    <img src="https://raw.githubusercontent.com/mkhanyile08-bot/lasa-order/main/chips-small.png" alt="Small Chips" style="width:100%;border-radius:10px;margin-bottom:10px;object-fit:contain;height:200px;background:#fff;display:block;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="item-emoji">🍟</div>
+      <div class="item-info">
+        <div class="item-name">Small Chips</div>
+        <div class="item-desc">Spiced + vinegar — small portion</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">R25</div>
+        <div class="qty-ctrl">
+          <button class="qty-btn minus" onclick="changeQty(this,-1)">−</button>
+          <span class="qty-num">0</span>
+          <button class="qty-btn plus" onclick="changeQty(this,1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-id="chips-medium" data-name="Medium Chips" data-price="35" style="flex-direction:column;align-items:stretch;">
+    <img src="https://raw.githubusercontent.com/mkhanyile08-bot/lasa-order/main/chips-medium.png" alt="Medium Chips" style="width:100%;border-radius:10px;margin-bottom:10px;object-fit:contain;height:200px;background:#fff;display:block;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="item-emoji">🍟</div>
+      <div class="item-info">
+        <div class="item-name">Medium Chips</div>
+        <div class="item-desc">Spiced + vinegar — medium portion</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">R35</div>
+        <div class="qty-ctrl">
+          <button class="qty-btn minus" onclick="changeQty(this,-1)">−</button>
+          <span class="qty-num">0</span>
+          <button class="qty-btn plus" onclick="changeQty(this,1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-id="chips-large" data-name="Large Chips" data-price="45" style="flex-direction:column;align-items:stretch;">
+    <img src="https://raw.githubusercontent.com/mkhanyile08-bot/lasa-order/main/chips-large.png" alt="Large Chips" style="width:100%;border-radius:10px;margin-bottom:10px;object-fit:contain;height:200px;background:#fff;display:block;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="item-emoji">🍟</div>
+      <div class="item-info">
+        <div class="item-name">Large Chips</div>
+        <div class="item-desc">Spiced + vinegar — large portion</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">R45</div>
+        <div class="qty-ctrl">
+          <button class="qty-btn minus" onclick="changeQty(this,-1)">−</button>
+          <span class="qty-num">0</span>
+          <button class="qty-btn plus" onclick="changeQty(this,1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-id="russian-small" data-name="Small Russian" data-price="12">
+    <div class="item-emoji">🌭</div>
+    <div class="item-info">
+      <div class="item-name">Small Russian</div>
+      <div class="item-desc">Small russian sausage</div>
+    </div>
+    <div class="item-right">
+      <div class="item-price">R12</div>
+      <div class="qty-ctrl">
+        <button class="qty-btn minus" onclick="changeQty(this,-1)">−</button>
+        <span class="qty-num">0</span>
+        <button class="qty-btn plus" onclick="changeQty(this,1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-id="russian-medium" data-name="Medium Russian" data-price="18">
+    <div class="item-emoji">🌭</div>
+    <div class="item-info">
+      <div class="item-name">Medium Russian</div>
+      <div class="item-desc">Medium russian sausage</div>
+    </div>
+    <div class="item-right">
+      <div class="item-price">R18</div>
+      <div class="qty-ctrl">
+        <button class="qty-btn minus" onclick="changeQty(this,-1)">−</button>
+        <span class="qty-num">0</span>
+        <button class="qty-btn plus" onclick="changeQty(this,1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-id="russian-large" data-name="Large Russian" data-price="25">
+    <div class="item-emoji">🌭</div>
+    <div class="item-info">
+      <div class="item-name">Large Russian</div>
+      <div class="item-desc">Large russian sausage</div>
+    </div>
+    <div class="item-right">
+      <div class="item-price">R25</div>
+      <div class="qty-ctrl">
+        <button class="qty-btn minus" onclick="changeQty(this,-1)">−</button>
+        <span class="qty-num">0</span>
+        <button class="qty-btn plus" onclick="changeQty(this,1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-id="kota" data-name="Kota" data-price="45" style="flex-direction:column;align-items:stretch;">
+    <img src="https://raw.githubusercontent.com/mkhanyile08-bot/lasa-order/main/kota.jpeg" alt="Kota" style="width:100%;border-radius:10px;margin-bottom:10px;object-fit:contain;height:260px;background:#1a1a1a;display:block;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="item-emoji">🥪</div>
+      <div class="item-info">
+        <div class="item-name">Kota</div>
+        <div class="item-desc">Loaded kota — the township classic</div>
+      </div>
+      <div class="item-right">
+        <div class="item-price">R45</div>
+        <div class="qty-ctrl">
+          <button class="qty-btn minus" onclick="changeQty(this,-1)">−</button>
+          <span class="qty-num">0</span>
+          <button class="qty-btn plus" onclick="changeQty(this,1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="item" data-id="classic-kota" data-name="Classic Kota" data-price="35">
+    <div class="badge-new">NEW</div>
+    <div class="item-emoji">🥖</div>
+    <div class="item-info">
+      <div class="item-name">Classic Kota</div>
+      <div class="item-desc">Quarter loaf stuffed with chips, polony, cheese &amp; atchar</div>
+    </div>
+    <div class="item-right">
+      <div class="item-price">R35</div>
+      <div class="qty-ctrl">
+        <button class="qty-btn minus" onclick="changeQty(this,-1)">−</button>
+        <span class="qty-num">0</span>
+        <button class="qty-btn plus" onclick="changeQty(this,1)">+</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- EXTRAS -->
+<div class="section-label">Add-Ins</div>
+<div class="extras" id="extras">
+  <div class="extra-chip" data-extra="Salad (R5)" onclick="toggleExtra(this)">🥗 Salad +R5</div>
+  <div class="extra-chip" data-extra="Hot Sauce" onclick="toggleExtra(this)">🌶️ Hot Sauce</div>
+  <div class="extra-chip" data-extra="Mild Sauce" onclick="toggleExtra(this)">🧡 Mild Sauce</div>
+  <div class="extra-chip" data-extra="Tomato Sauce" onclick="toggleExtra(this)">🍅 Tomato Sauce</div>
+  <div class="extra-chip" data-extra="Burger Sauce" onclick="toggleExtra(this)">🫙 Burger Sauce</div>
+</div>
+
+<!-- NOTE -->
+<div class="section-label">Special Instructions (optional)</div>
+<div class="note-wrap">
+  <textarea class="note-input" id="noteInput" rows="2" placeholder="e.g. Extra spicy, no onions, collect at 6pm..."></textarea>
+</div>
+
+<div class="spacer"></div>
+
+<!-- SUMMARY -->
+<div class="summary-bar">
+  <div>
+    <div class="summary-label">YOUR ORDER TOTAL</div>
+    <div style="font-size:11px;color:#86EFAC;font-weight:600;margin-top:2px" id="itemCount">No items selected yet</div>
+  </div>
+  <div class="summary-total" id="totalDisplay">R0</div>
+</div>
+
+<div class="spacer"></div>
+
+<!-- GUARANTEE -->
+<div class="guarantee">
+  <div class="guarantee-icon">✅</div>
+  <div class="guarantee-text">If it's not hot and fresh when you collect, we remake it — no questions asked. That's the LASA promise.</div>
+</div>
+
+<div class="spacer"></div>
+
+<!-- CTA -->
+<div class="cta-wrap">
+  <button class="cta-btn cta-disabled" id="orderBtn" onclick="sendOrder()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+    Select items to order
+  </button>
+  <div class="cta-note">Opens WhatsApp · Your order is pre-filled · Just hit Send</div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-contact">📞 082 502 3269  /  079 823 3419</div>
+  <div class="footer-address">Plein Street, Postdene · Opposite Fantacy Club</div>
+  <div class="footer-address" style="margin-top:6px;color:#A7F3D0;">Hot, Fresh &amp; Served with Pap Every Time 🔥</div>
+  <div style="margin-top:16px;background:#1a1a1a;border:2px solid #facc15;border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;justify-content:center;">
+    <span style="font-size:28px;">💳</span>
+    <div style="text-align:left;">
+      <div style="color:#facc15;font-weight:800;font-size:15px;">Card Payments Welcome</div>
+      <div style="color:#d1d5db;font-size:12px;margin-top:2px;">We have a swipe machine — pay by card or cash</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const PHONE = "27825023269"; // 082 502 3269 in international format
+  let orders = {};
+  let extras = new Set();
+
+  function getPrice(extra) {
+    const m = extra.match(/R(\d+)/);
+    return m ? parseInt(m[1]) : 0;
+  }
+
+  function changeQty(btn, delta) {
+    const item = btn.closest('.item');
+    const id   = item.dataset.id;
+    const name = item.dataset.name;
+    const price= parseInt(item.dataset.price);
+    const display = item.querySelector('.qty-num');
+
+    if (!orders[id]) orders[id] = { name, price, qty: 0 };
+    orders[id].qty = Math.max(0, orders[id].qty + delta);
+    display.textContent = orders[id].qty;
+
+    if (orders[id].qty === 0) delete orders[id];
+    item.classList.toggle('selected', (orders[id]?.qty || 0) > 0);
+
+    updateSummary();
+  }
+
+  function toggleExtra(chip) {
+    const key = chip.dataset.extra;
+    if (extras.has(key)) { extras.delete(key); chip.classList.remove('selected'); }
+    else                 { extras.add(key);    chip.classList.add('selected'); }
+    updateSummary();
+  }
+
+  function updateSummary() {
+    let total = 0;
+    let lines = [];
+
+    Object.values(orders).forEach(o => {
+      if (o.qty > 0) {
+        total += o.price * o.qty;
+        lines.push(`${o.qty}x ${o.name}`);
+      }
+    });
+    extras.forEach(e => { total += getPrice(e); });
+
+    const btn = document.getElementById('orderBtn');
+    const totalEl = document.getElementById('totalDisplay');
+    const countEl = document.getElementById('itemCount');
+
+    totalEl.textContent = `R${total}`;
+
+    if (lines.length === 0) {
+      countEl.textContent = 'No items selected yet';
+      btn.textContent = 'Select items to order';
+      btn.classList.add('cta-disabled');
+      // re-add icon
+      btn.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Select items to order`;
+    } else {
+      const total_items = Object.values(orders).reduce((s,o)=>s+o.qty,0);
+      countEl.textContent = `${total_items} item${total_items>1?'s':''} selected`;
+      btn.classList.remove('cta-disabled');
+      btn.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> ORDER ON WHATSAPP — R${total}`;
+    }
+  }
+
+  function sendOrder() {
+    const lines = [];
+    Object.values(orders).forEach(o => {
+      if (o.qty > 0) lines.push(`  • ${o.qty}x ${o.name} @ R${o.price} each`);
+    });
+    if (lines.length === 0) return;
+
+    let total = Object.values(orders).reduce((s,o)=>s+(o.price*o.qty),0);
+    const extraList = [...extras];
+    if (extraList.length) {
+      extraList.forEach(e => {
+        lines.push(`  • ${e}`);
+        total += getPrice(e);
+      });
+    }
+
+    const note = document.getElementById('noteInput').value.trim();
+    let msg = `🔥 *LASA ORDER REQUEST*\n\n`;
+    msg += `Hi LASA! I'd like to order:\n\n`;
+    msg += lines.join('\n') + '\n\n';
+    msg += `*ORDER TOTAL: R${total}*\n`;
+    if (note) msg += `\n📝 Special instructions: ${note}\n`;
+    msg += `\nPlease confirm my order. Thank you! 🙏`;
+
+    const url = `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+    showToast('Opening WhatsApp... 🚀');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>
